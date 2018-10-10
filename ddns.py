@@ -13,18 +13,18 @@ from email.mime.text import MIMEText
 
 # dnspod api
 
-login_token = 'xxx,xxx'  # api_id,api_token
+login_token = "xxxx,xxxxxxxx"  # api_id,api_token
 sub_domain = 'xxx'
-domain_ = 'xxx.xxx'
-record_line_id = 'xxxxxxx'
-record_id = 'xxxxxxx'
+domain = 'xxxx.xx'
+record_line_id = '0'
+record_id = 'xxxxxxxx'
 req_headers = {'user-agent': 'dynaDnsPod/0.0.1 (spinmry@126.com)'}
 
 # email server settings
 SMTPServer = 'smtp.xxx.com'
-master = 'xxx@xxx.com'
-email_user = 'xxx@xxx.com'
-email_passwd = 'xxxxxx'
+master = 'xxxx@xxx.com'
+email_user = 'xxxxx@xxx.com'
+email_passwd = 'xxxxx'
 
 
 def get_record_info():
@@ -60,14 +60,14 @@ def get_local_ip():
 
 def SendEmail(subject, msgstr):
     msg = MIMEText(msgstr, 'plain', 'utf-8')
-    msg['Form'] = user
+    msg['Form'] = email_user
     msg['To'] = master
     msg['Subject'] = subject
     sser = smtplib.SMTP(SMTPServer)
     try:
         sser.login(email_user, email_passwd)
         print('Login successfully!')
-        sser.sendmail(user, [master], msg.as_string())
+        sser.sendmail(email_user, [master], msg.as_string())
         print('Processed successfully')
     except smtplib.SMTPException as e:
         print(e)
@@ -95,11 +95,11 @@ def modify_dns_record():
     print(res_json)
 
     enc_json = json.loads(res_json)
-    res_status = enc_json['status'][0]['code']
-    print("Status:%d" % res_status)
+    res_status = enc_json['status']['code']
+    print("Status:%s" % res_status)
     if res_status == '1':
         return True
-    else:
+    else:1
         return False
 
 
@@ -117,16 +117,17 @@ def main():
                 success = modify_dns_record()
                 if success:
                     subject = "Record IP has modified!"
-                    msgstr = "Record of domain \'%s.%s\' has been updated!\nRecord IP:%d\nServer Local IP:%d " % (
+                    msgstr = "Record of domain \'%s.%s\' has been updated!\nRecord IP:%s\nServer Local IP:%s " % (
                         sub_domain, domain, get_record_info(), get_local_ip())
                     SendEmail(subject, msgstr)
                 else:
                     subject = "Failed to modify record IP!"
-                    msgstr = "Failed to modify record of domain \'%s.%s\'!\nRecord IP:%d\nServer Local IP:%d " % (
+                    msgstr = "Failed to modify record of domain \'%s.%s\'!\nRecord IP:%s\nServer Local IP:%s " % (
                         sub_domain, domain, get_record_info(), get_local_ip())
                     SendEmail(subject, msgstr)
-            time.sleep(600)
-    except BaseException:
+        print("Wait for next one hour!")
+        time.sleep(3600)
+    except:
         print("Something went wrong")
 
 
